@@ -1,0 +1,177 @@
+#include "p18f4550.inc"
+
+;SECUENCIA LED
+
+; CONFIGURACIÓN DEL MICROCONTROLADOR
+CONFIG  PLLDIV = 1            ; No prescaler del PLL
+CONFIG  CPUDIV = OSC1_PLL2    ; Postscaler del sistema
+CONFIG  USBDIV = 2            ; División de reloj USB
+CONFIG  FOSC = INTOSCIO_EC    ; Oscilador interno
+CONFIG  WDT = OFF             ; Watchdog Timer deshabilitado
+CONFIG  MCLRE = OFF           ; MCLR deshabilitado, se usa como entrada digital
+CONFIG  LVP = OFF             ; Low Voltage Programming deshabilitado
+
+; VARIABLES EN MEMORIA
+Contador1 EQU 0x20
+Contador2 EQU 0x21
+Contador3 EQU 0x22
+
+ORG 0x00
+    GOTO inicio
+
+inicio:
+    MOVLW 0x71          ;  configuración precisa del oscilador
+    MOVWF OSCCON        
+
+    CLRF TRISB          ; Configurar PORTB como salida
+    
+    ; CLRF LATB          
+
+loop:
+    BSF LATB, 0         ; Encender LED en RB0
+    CALL retraso3s      ; Mantener encendido por 3s
+    BCF LATB, 0         ; Apagar LED en RB0
+
+    BSF LATB, 1         ; Encender LED en RB1
+    CALL retraso3s      ; Mantener encendido por 3s
+    BCF LATB, 1         ; Apagar LED en RB1
+
+    BSF LATB, 2         ; Encender LED en RB2
+    CALL retraso3s      ; Mantener encendido por 3s
+    BCF LATB, 2         ; Apagar LED en RB2
+
+    GOTO loop           ; Repetir en bucle
+
+; RETARDO DE 3 SEGUNDOS
+retraso3s:
+    MOVLW D'29'         ; 
+    MOVWF Contador1
+bucle1:
+    CALL retraso100ms
+    DECFSZ Contador1, F 
+    GOTO bucle1
+    RETURN 
+
+; RETARDO DE 100ms 
+retraso100ms:
+    MOVLW D'249'        ;  precisión
+    MOVWF Contador2
+bucle2:
+    MOVLW D'250'
+    MOVWF Contador3
+bucle3:
+    NOP
+    NOP
+    DECFSZ Contador3, F
+    GOTO bucle3
+    DECFSZ Contador2, F
+    GOTO bucle2
+    RETURN
+
+END
+
+;PRENDIDO Y APAGADO DE UN LED
+
+#include "p18f4550.inc"
+
+; CONFIGURACIÓN DEL MICROCONTROLADOR
+CONFIG  PLLDIV = 1            ; No prescaler del PLL
+CONFIG  CPUDIV = OSC1_PLL2    ; Postscaler del sistema
+CONFIG  USBDIV = 2            ; División de reloj USB
+CONFIG  FOSC = INTOSCIO_EC    ; Oscilador interno
+CONFIG  WDT = OFF             ; Watchdog Timer deshabilitado
+CONFIG  MCLRE = OFF           ;MCLR deshabilitado, se usa como entrada digital
+CONFIG  LVP = OFF             ; Low Voltage Programming deshabilitado
+
+; VARIABLES EN MEMORIA
+Contador1  EQU 0x20
+Contador2  EQU 0x21
+Contador3  EQU 0x22
+Contador12 EQU 0x23
+Contador22 EQU 0x24
+Contador32 EQU 0x25
+
+ORG 0x00
+    GOTO inicio
+
+inicio:
+    MOVLW 0x71           ;  configuración precisa del oscilador  
+    MOVWF OSCCON        
+
+    CLRF TRISB          ; Configurar PORTB como salida
+    
+    ;CLRF LATB         
+
+loop:
+    BSF LATB, 0         ; Encender LED en RB0
+    CALL retraso3s      ; Mantener encendido por 3s
+    BCF LATB, 0         ; Apagar LED en RB0
+    CALL retraso3s      ; Mantener apagado por 3s
+    GOTO loop           ; Repetir en bucle
+
+; RETARDO DE 5 SEGUNDOS
+retraso5s:
+    MOVLW D'48'         ;  
+    MOVWF Contador1
+bucle1:
+    CALL retraso100ms
+    DECFSZ Contador1, F 
+    GOTO bucle1
+    RETURN 
+
+; RETARDO DE 3 SEGUNDOS
+retraso3s:
+    MOVLW D'29'         ;
+    MOVWF Contador12
+bucle12:
+    CALL retraso100ms
+    DECFSZ Contador12, F 
+    GOTO bucle12
+    RETURN 
+
+; RETARDO DE 100ms 
+retraso100ms:
+    MOVLW D'249'        ; 
+    MOVWF Contador2
+bucle2:
+    MOVLW D'250'        ;   
+    MOVWF Contador3
+bucle3:
+    NOP
+    NOP
+    DECFSZ Contador3, F
+    GOTO bucle3
+    DECFSZ Contador2, F
+    GOTO bucle2
+    RETURN
+
+END
+
+;PRENDER UN LED
+
+#include "p18f4550.inc"
+
+; CONFIGURACIÓN DEL MICROCONTROLADOR
+CONFIG  PLLDIV = 1            ; No prescaler del PLL
+CONFIG  CPUDIV = OSC1_PLL2    ; Postscaler del sistema
+CONFIG  USBDIV = 2            ; División de reloj USB
+CONFIG  FOSC = INTOSCIO_EC    ; Oscilador interno
+CONFIG  WDT = OFF             ; Watchdog Timer deshabilitado
+CONFIG  MCLRE= OFF            ;MCLR deshabilitado, se usa como entrada digital
+CONFIG  LVP = OFF             ; Low Voltage Programming deshabilitado
+
+ORG 0x00
+    GOTO inicio
+
+inicio:
+    MOVLW 0x71          ; 
+    MOVWF OSCCON        
+
+    CLRF TRISB          ; Configurar PORTD como salida
+    
+    ; CLRF LATB       
+    
+    BSF LATD, 0         ; Encender LED en RD0
+    
+END
+
