@@ -22,45 +22,38 @@ inicio:
     CLRF TRISB          ; Configurar PORTB como salida
     CLRF LATB           ; Apagar todos los LEDs del lado B
 
-loop:
+Loop:
     BSF LATB, 0         ; Encender LED en RB0
-    CALL retraso3s      ; Mantener encendido por 3s
+    CALL InicioRetardo      ; Mantener encendido por 3s
     BCF LATB, 0         ; Apagar LED en RB0
 
     BSF LATB, 1         ; Encender LED en RB1
-    CALL retraso3s      ; Mantener encendido por 3s
+    CALL InicioRetardo      ; Mantener encendido por 3s
     BCF LATB, 1         ; Apagar LED en RB1
 
     BSF LATB, 2         ; Encender LED en RB2
-    CALL retraso3s      ; Mantener encendido por 3s
+    CALL InicioRetardo     ; Mantener encendido por 3s
     BCF LATB, 2         ; Apagar LED en RB2
 
-    GOTO loop           ; Repetir en bucle
+    GOTO Loop           ; Repetir en bucle
 
-; RETARDO DE 3 SEGUNDOS
-retraso3s:
-    MOVLW D'30'         
-    MOVWF Contador1
-bucle1:
-    CALL retraso100ms
-    DECFSZ Contador1, F 
-    GOTO bucle1
-    RETURN 
+; RETARDO ENCENDIDO
+InicioRetardo:
+    MOVLW D'30'         ; Asignar el valor 30 a D     
+    MOVWF Contador3     ; Cargar ese valor en la Variable Contador3
+    MOVLW D'100'        ; Asignar el valor 100 a D          
+    MOVWF Contador2     ; Cargar ese valor en la Variable Contador2
+    MOVLW D'250'        ; Asignar el valor 250 a D     
+    MOVWF Contador1     ; Cargar ese valor en la Variable Contador1
+    NOP                 ;
+    DECFSZ Contador1,F  ;
+    GOTO $-2            ;
+    DECFSZ Contador2,F  ;
+    GOTO $-6            ;
+    DECFSZ Contador3,F  ;
+    GOTO $-8            ;
 
-; RETARDO DE 100ms (BASADO EN 8MHz)
-retraso100ms:
-    MOVLW D'250'         
-    MOVWF Contador2
-bucle2:
-    MOVLW D'250'
-    MOVWF Contador3
-bucle3:
-    NOP
-    NOP
-    DECFSZ Contador3, F
-    GOTO bucle3
-    DECFSZ Contador2, F
-    GOTO bucle2
-    RETURN
+Return
+
 
 END
