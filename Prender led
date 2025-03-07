@@ -1,0 +1,45 @@
+PIC18F4550 Configuration Bit Settings
+; Assembly source line config statements
+
+
+
+; PIC18F4550 Configuration Bit Settings
+
+; Assembly source line config statements
+
+#include "p18f4550.inc"
+
+; CONFIG1L
+  CONFIG  PLLDIV = 1            ; PLL Prescaler Selection bits (No prescale (4 MHz oscillator input drives PLL directly))
+  CONFIG  CPUDIV = OSC1_PLL2    ; System Clock Postscaler Selection bits ([Primary Oscillator Src: /1][96 MHz PLL Src: /2])
+  CONFIG  USBDIV = 2            ; USB Clock Selection bit (used in Full-Speed USB mode only; UCFG:FSEN = 1) (USB clock source comes from the 96 MHz PLL divided by 2)
+
+; CONFIG1H
+  CONFIG  FOSC = INTOSCIO_EC    ; Oscillator Selection bits (Internal oscillator, port function on RA6, EC used by USB (INTIO))
+  CONFIG  FCMEN = OFF           ; Fail-Safe Clock Monitor Enable bit (Fail-Safe Clock Monitor disabled)
+  CONFIG  IESO = OFF            ; Internal/External Oscillator Switchover bit (Oscillator Switchover mode disabled)
+
+  CONFIG  WDT = OFF             ; Watchdog Timer Enable bit (WDT disabled (control is placed on the SWDTEN bit))
+ 
+  CONFIG  LVP = OFF             ; Single-Supply ICSP Enable bit (Single-Supply ICSP disabled)
+
+
+;
+
+Contador1: RES 1 ;Guardar un espacio en la memoria 
+Contador2: RES 1 ;
+Contador3: RES 1;
+Contador12: RES 1 ;
+Contador22: RES 1 ;
+Contador32: RES 1 ;
+
+    ORG 0x00
+    GOTO inicio
+inicio:
+    MOVLW 0x72 ; cargar valor 01110110
+    MOVWF OSCCON ;CONFIGURAR a frecuencia interna de 8MHz estable
+    MOVLB 1           ; Seleccionar banco 1
+    CLRF TRISD ;Configurar puerto B como salidas
+    MOVLB 0           ; Volver al banco 0
+    CLRF LATD         ; Apagar todos los LEDs al inicio
+    BSF LATD, 0 ;Encender el pin RD0
