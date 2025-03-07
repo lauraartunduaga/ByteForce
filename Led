@@ -1,0 +1,101 @@
+; PIC18F4550 Configuration Bit Settings
+; Assembly source line config statements
+
+
+
+; PIC18F4550 Configuration Bit Settings
+
+; Assembly source line config statements
+
+#include "p18f4550.inc"
+
+; CONFIG1L
+  CONFIG  PLLDIV = 1            ; PLL Prescaler Selection bits (No prescale (4 MHz oscillator input drives PLL directly))
+  CONFIG  CPUDIV = OSC1_PLL2    ; System Clock Postscaler Selection bits ([Primary Oscillator Src: /1][96 MHz PLL Src: /2])
+  CONFIG  USBDIV = 2            ; USB Clock Selection bit (used in Full-Speed USB mode only; UCFG:FSEN = 1) (USB clock source comes from the 96 MHz PLL divided by 2)
+
+; CONFIG1H
+  CONFIG  FOSC = INTOSCIO_EC    ; Oscillator Selection bits (Internal oscillator, port function on RA6, EC used by USB (INTIO))
+  CONFIG  FCMEN = OFF           ; Fail-Safe Clock Monitor Enable bit (Fail-Safe Clock Monitor disabled)
+  CONFIG  IESO = OFF            ; Internal/External Oscillator Switchover bit (Oscillator Switchover mode disabled)
+
+  CONFIG  WDT = OFF             ; Watchdog Timer Enable bit (WDT disabled (control is placed on the SWDTEN bit))
+ 
+  CONFIG  LVP = OFF             ; Single-Supply ICSP Enable bit (Single-Supply ICSP disabled)
+
+
+;
+
+Contador1: RES 1 ;Guardar un espacio en la memoria 
+Contador2: RES 1 ;
+Contador3: RES 1;
+Contador12: RES 1 ;
+Contador22: RES 1 ;
+Contador32: RES 1 ;
+
+    ORG 0x00
+    GOTO inicio
+inicio:
+    MOVLW 0x72 ; cargar valor 01110110
+    MOVWF OSCCON ;CONFIGURAR a frecuencia interna de 8MHz estable
+    MOVLB 1           ; Seleccionar banco 1
+    CLRF TRISD ;Configurar puerto B como salidas
+    MOVLB 0           ; Volver al banco 0
+    CLRF LATD         ; Apagar todos los LEDs al inicio
+loop:
+    BSF LATD, 0 ;Encender el pin RD0
+    Call retraso2s ;Mantener el led encendido por 6 segundos
+    BCF LATD, 0 ;Apagar led en el pin RD0
+    CALL retraso2s ;Mantener el led apagado por 6 segundos
+    
+    BSF LATD, 1 ;Encender el pin RD1
+
+    Call retraso2s ;Mantener el led encendido por 6 segundos
+    BCF LATD, 1 ;Apagar led en el pin RD2
+    Call retraso2s  ;mantener apagado
+    BSF LATD, 2 ;Encender el pin RD3
+    Call retraso2s ;Mantener el led encendido por 6 segundos
+    BCF LATD, 2 ;Apagar led en el pin RD3
+    CALL retraso2s ;Mantener el led apagado por 6 segundos
+
+    GOTO loop ;Repetir en bucle
+
+retraso6s:
+    MOVLW 0xFF ;Cargar 255 iteracciones
+    MOVWF Contador1 ;Guardar valor en contador1
+bucle1:
+    MOVLW 0xFF  ;Cargar 255 iteracciones
+    MOVWF Contador2 ;Guardar valor en contador2
+bucle2:
+    MOVLW 0x3E ;Cargar 255 iteracciones
+    MOVWF Contador3 ;Guardar valor en contador3
+bucle3:
+    DECFSZ Contador3, F ;Decrementa contador3
+    GOTO bucle3 ;si contador3 no es cero repite bucle3
+    DECFSZ Contador2, F ;Decrementa contador2
+    GOTO bucle2 ;si contador3 no es cero repite bucle2
+    DECFSZ Contador1, F ;Decrementa contador1
+    GOTO bucle1 ;si contador3 no es cero repite bucle1
+    return ;regresa al programa principal al acabar el retardo
+retraso2s:
+    MOVLW 0xFF  ;Cargar 255 iteracciones
+    MOVWF Contador12 ;Guardar valor en contador12
+bucle12:
+    MOVLW 0xFF  ;Cargar 255 iteracciones
+    MOVWF Contador22 ;Guardar valor en contador22
+bucle22:
+    MOVLW 0x15 ;Cargar 255 iteracciones
+
+    MOVWF Contador32 ;Guardar valor en contador32
+bucle32:
+    DECFSZ Contador32, F ;Decrementa contador32
+    GOTO bucle32 ;si contador3 no es cero repite bucle32
+    DECFSZ Contador22, F ;Decrementa contador22
+    GOTO bucle22 ;si contador3 no es cero repite bucle22
+    DECFSZ Contador12, F ;Decrementa contador12
+    GOTO bucle12 ;si contador3 no es cero repite bucle12
+    return ;regresa al programa principal al acabar el retardo
+
+    END	;
+
+
