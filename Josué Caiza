@@ -1,0 +1,27 @@
+#include "p18f4550.inc"
+
+; CONFIGURACIÓN DEL MICROCONTROLADOR
+CONFIG  PLLDIV = 1            ; No prescaler del PLL
+CONFIG  CPUDIV = OSC1_PLL2    ; Postscaler del sistema
+CONFIG  USBDIV = 2            ; División de reloj USB
+CONFIG  FOSC = INTOSCIO_EC    ; Oscilador interno
+CONFIG  WDT = OFF             ; Watchdog Timer deshabilitado
+CONFIG MCLRE= OFF
+CONFIG  LVP = OFF             ; Low Voltage Programming deshabilitado
+
+ORG 0x00
+    GOTO inicio
+
+inicio:
+    MOVLW 0x70          ; Configura oscilador interno a 8MHz
+    MOVWF OSCCON        
+
+    MOVLB 1             ; Cambiar al banco 1
+    CLRF TRISD          ; Configurar PORTD como salida
+    MOVLB 0             ; Volver al banco 0
+
+encender_led:
+    BSF LATD, 0         ; Encender LED en RD0
+    GOTO encender_led   ; Bucle infinito para mantener el LED encendido
+
+END
