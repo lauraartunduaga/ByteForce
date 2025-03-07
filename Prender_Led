@@ -1,0 +1,15 @@
+list p=18f4550
+#include <p18f4550.inc>
+
+;config del microcontrolador
+CONFIG FOSC = INTOSCIO_EC ; Oscilador interno
+CONFIG WDT = OFF ; Watchdog Timer deshabilitado para evitar reinicios
+CONFIG LVP = OFF ; Low Voltage Programing deshabilitado
+
+ORG 0x00
+    MOVLW 0x70 ; Ocilador interno a 8 MGz
+    MOVWF OSCCON
+
+    CLRF TRISB ; configura PORTB como salida
+    BSF LATB, 1 ; enciende led en RB1
+END
