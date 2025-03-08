@@ -1,26 +1,76 @@
 #include "p18f4550.inc"
-
 ; CONFIGURACIÓN DEL MICROCONTROLADOR
-CONFIG  PLLDIV = 1            ; No usamos el preescalador del PLL
-CONFIG  CPUDIV = OSC1_PLL2    ; reloj/2
-CONFIG  USBDIV = 2            ; division/2 de reloj USB
-CONFIG  FOSC = INTOSCIO_EC    ; usamos oscilador interno
-CONFIG  WDT = OFF             ; deshabilitamos Watchdog Timer 
-CONFIG  LVP = OFF             ; no se utliza la programación Low Voltage Programming 
-;iniciamos programa y le damos una direccion de memoria
+
+CONFIG  PLLDIV = 1            ; No prescaler del PLL
+CONFIG  CPUDIV = OSC1_PLL2    ; Postscaler del sistema
+CONFIG  USBDIV = 2            ; División de reloj USB
+CONFIG  FOSC = INTOSCIO_EC    ; Oscilador interno
+CONFIG  WDT = OFF             ; Watchdog Timer deshabilitado
+CONFIG MCLRE= OFF
+CONFIG  LVP = OFF             ; Low Voltage Programming deshabilitado
+
+; direcciones de memoria para las varaibles del contador del retraso
+CNTDR1 EQU 0x20
+CNTDR2 EQU 0x21
+CNTDR3 EQU 0x22
+CNTDR4 EQU 0x23
+
 ORG 0x00
     GOTO inicio
-
 inicio:
+
     MOVLW 0x70          ; iniciamos y onfiguramos el oscilador interno a 8MHz
     MOVWF OSCCON        
+    MOVLB 1             ; cambiamos al banco 1
+    CLRF TRISD          ; configura todos los pines del puerto D como salidas
+    MOVLB 0             ; volvemos al banco 0
+    CLRF LATD           ; limpia este registro y asi apagar todos los LEDs
+loop:
+    BSF LATD, 0         ; coloca el bit 0 del registro para encender led
+    CALL retraso_5seg    ; llama a la subrutina paar un retraso de 5 segundos
+    BCF LATD, 0         ; borra el registro y apaga LED en RD0
+    CALL retraso_2seg    ; se apaga por 2s
+    GOTO loop           ; repetimos el bucle
 
-    MOVLB 1             ; cambiar al banco 1
-    CLRF TRISD          ; todos los pines de D como salida
-    MOVLB 0             ; Volver al banco 0
+; Retraso de 5 segundos
+retraso_5seg:
+    MOVLW D'50'         
+    MOVWF CNTDR1; asignamos valor de 50 en el contador 1
+bucle:
+;llamamos a retraso100mseg 50 veces
+    CALL retraso_100mseg
+    DECFSZ CNTDR1, F 
+    GOTO bucle
+    RETURN 
 
-encender_led:
-    BSF LATD, 0         ; Encender LED en RD0
-    GOTO encender_led   ; Bucle infinito para mantener el LED encendido
+; Retraso de 2 segundos, hace lo mismo que el anterior simplemente cambian valores
+retraso_2seg:
+    MOVLW D'20'         
+    MOVWF CNTDR4
+bucle2:
+    CALL retraso100ms
+    DECFSZ CNTDR4, F 
+    GOTO bucle2
+    RETURN 
 
+; Retardo de 100mseg 
+
+retraso_100mseg:
+    MOVLW D'250'         
+    MOVWF CNTDR2
+;Carga el valor decimal 250 en el registro de trabajo W y de W a cintador 2
+
+bucle2:
+    MOVLW D'250'
+    MOVWF CNTDR3
+
+bucle3:
+    NOP; pequeño retardo
+    NOP; consume un ciclo del reloj
+    DECFSZ CNTDR3, F
+    GOTO bucle3
+;decrementa su valor a 1 hasta llegar a 0, hace un retardo
+    DECFSZ CNTDR2, F
+    GOTO bucle2
+    RETURN
 END
