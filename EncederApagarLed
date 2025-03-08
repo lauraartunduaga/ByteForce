@@ -1,0 +1,50 @@
+#include "p18f4550.inc"
+
+; CONFIGURACIÓN DEL MICROCONTROLADOR
+CONFIG  PLLDIV = 1            ; No prescaler del PLL
+CONFIG  CPUDIV = OSC1_PLL2    ; Postscaler del sistema
+CONFIG  USBDIV = 2            ; División de reloj USB
+CONFIG  FOSC = INTOSCIO_EC    ; Oscilador interno
+CONFIG  WDT = OFF             ; Watchdog Timer deshabilitado
+
+; VARIABLES EN MEMORIA
+Contador1 EQU 0x20
+Contador2 EQU 0x21
+Contador3 EQU 0x22
+
+ORG 0x00
+
+inicio:
+    MOVLW 0x72          ; Configura oscilador interno a 8MHz
+    MOVWF OSCCON        
+
+   
+    CLRF TRISB          ; Configurar PORTB como salida
+    CLRF LATB           ; Apagar todos los LEDs del lado B
+
+Loop:
+    BSF LATB, 0         ; Encender LED en RB0
+    CALL InicioRetardo      ; Mantener encendido por 3s
+    BCF LATB, 0         ; Apagar LED en RB0
+    GOTO Loop           ; Repetir en bucle
+
+; RETARDO ENCENDIDO
+InicioRetardo:
+    MOVLW D'30'         ; Asignar el valor 30 a D     
+    MOVWF Contador3     ; Cargar ese valor en la Variable Contador3
+    MOVLW D'100'        ; Asignar el valor 100 a D          
+    MOVWF Contador2     ; Cargar ese valor en la Variable Contador2
+    MOVLW D'250'        ; Asignar el valor 250 a D     
+    MOVWF Contador1     ; Cargar ese valor en la Variable Contador1
+    NOP                 ; Funcion que consume tiempo de ciclo
+    DECFSZ Contador1,F  ; decrementar el contador 1 hasta llegar a 0, si no leer la siguiente linea
+    GOTO $-2            ; ir 2 instrucciones atras 
+    DECFSZ Contador2,F  ; decrementar el contador 2 hasta llegar a 0, si no leer la siguiente linea
+    GOTO $-6            ; ir 6 instrucciones atras 
+    DECFSZ Contador3,F  ; decrementar el contador 3 hasta llegar a 0, si no leer la siguiente linea
+    GOTO $-8            ; ir 8 instrucciones atras 
+
+Return
+
+
+END
