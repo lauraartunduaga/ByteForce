@@ -1,0 +1,57 @@
+LIST p=18F4550
+#include <p18f4550.inc>
+
+; CONFIGURACIÓN DEL MICROCONTROLADOR
+CONFIG  FOSC = INTOSCIO_EC  ; Oscilador interno
+CONFIG  WDT = OFF          ; Watchdog Timer deshabilitado
+CONFIG  LVP = OFF          ; Low Voltage Programming deshabilitado
+
+; VARIABLES EN MEMORIA
+Contador2 EQU 0x20         ; Contador para el retardo de 2 segundos
+Contador100ms EQU 0x21     ; Contador para el retardo de 100ms
+Temporizador EQU 0x22      ; Temporizador para el retardo de 100ms
+
+ORG 0x00
+    MOVLW 0x70            ; Configura oscilador interno a 8MHz
+    MOVWF OSCCON         
+    
+    CLRF TRISB            ; Configura el puerto B como salida (RB1)
+
+inicio_bucle:
+    BSF LATB, 1           ; Encender LED en RB1
+    CALL esperar2s        ; Esperar 2 segundos
+    BCF LATB, 1           ; Apagar LED en RB1
+    CALL esperar2s        ; Esperar 2 segundos
+
+    GOTO inicio_bucle     ; Repetir el ciclo indefinidamente
+
+; Subrutina para retardo de 2 segundos
+
+esperar2s:
+    MOVLW D'20'           ; Cargar 20 ciclos de 100ms
+    MOVWF Contador2       ; Guardar en el contador
+bucle_espera2s:
+    CALL esperar100ms     ; Llamar a la subrutina de 100ms
+    DECFSZ Contador2, F   ; Reducir el contador
+    GOTO bucle_espera2s   ; Repetir mientras el contador no llegue a 0
+    RETURN
+
+; Subrutina para retardo de 100ms
+; Basado en 8MHz
+
+esperar100ms:
+    MOVLW D'250'          ; Cargar 250 ciclos para 100ms
+    MOVWF Contador100ms   ; Guardar en el contador de 100ms
+bucle_espera100ms:
+    MOVLW D'250'          ; Cargar 250 ciclos de NOP
+    MOVWF Temporizador    ; Guardar en temporizador
+bucle_nops:
+    NOP                   ;  consume ciclos
+    NOP                   ;  consume ciclos
+    DECFSZ Temporizador, F ; Reducir temporizador
+    GOTO bucle_nops       ; Repetir hasta llegar a 0
+    DECFSZ Contador100ms, F ; Reducir el contador de 100ms
+    GOTO bucle_espera100ms ; Repetir hasta que el contador llegue a 0
+    RETURN
+
+    END
