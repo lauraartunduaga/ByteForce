@@ -1,0 +1,27 @@
+;PRENDER UN LED
+
+#include "p18f4550.inc"
+
+; CONFIGURACIÓN DEL MICROCONTROLADOR
+CONFIG  PLLDIV = 1            ; No prescaler del PLL
+CONFIG  CPUDIV = OSC1_PLL2    ; Postscaler del sistema
+CONFIG  USBDIV = 2            ; División de reloj USB
+CONFIG  FOSC = INTOSCIO_EC    ; Oscilador interno
+CONFIG  WDT = OFF             ; Watchdog Timer deshabilitado
+CONFIG  MCLRE= OFF            ;MCLR deshabilitado, se usa como entrada digital
+CONFIG  LVP = OFF             ; Low Voltage Programming deshabilitado
+
+ORG 0x00
+    GOTO inicio
+
+inicio:
+    MOVLW 0x71          ; 
+    MOVWF OSCCON        
+
+    CLRF TRISB          ; Configurar PORTD como salida
+    
+    ; CLRF LATB       
+    
+    BSF LATD, 0         ; Encender LED en RD0
+    
+END
