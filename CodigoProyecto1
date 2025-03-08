@@ -45,13 +45,13 @@ InicioRetardo:
     MOVWF Contador2     ; Cargar ese valor en la Variable Contador2
     MOVLW D'250'        ; Asignar el valor 250 a D     
     MOVWF Contador1     ; Cargar ese valor en la Variable Contador1
-    NOP                 ;
-    DECFSZ Contador1,F  ;
-    GOTO $-2            ;
-    DECFSZ Contador2,F  ;
-    GOTO $-6            ;
-    DECFSZ Contador3,F  ;
-    GOTO $-8            ;
+    NOP                 ; Funcion que consume tiempo de ciclo
+    DECFSZ Contador1,F  ; decrementar el contador 1 hasta llegar a 0, si no leer la siguiente linea
+    GOTO $-2            ; ir 2 instrucciones atras 
+    DECFSZ Contador2,F  ; decrementar el contador 2 hasta llegar a 0, si no leer la siguiente linea
+    GOTO $-6            ; ir 6 instrucciones atras 
+    DECFSZ Contador3,F  ; decrementar el contador 3 hasta llegar a 0, si no leer la siguiente linea
+    GOTO $-8            ; ir 8 instrucciones atras 
 
 Return
 
